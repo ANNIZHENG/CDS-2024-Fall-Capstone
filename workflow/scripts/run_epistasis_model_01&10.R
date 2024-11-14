@@ -161,5 +161,5 @@ for (i in 1:nrow(enhancer.pairs)) {
 }
 
 # Write results to separate output files
-write.csv(results_cells_1, 'model_results/model_results_cells_01.csv', row.names = FALSE)
-write.csv(results_cells_2, 'model_results/model_results_cells_10.csv', row.names = FALSE)
+write.csv(results_cells_1, 'model_results/model_results_cells_10.csv', row.names = FALSE)
+write.csv(results_cells_2, 'model_results/model_results_cells_01.csv', row.names = FALSE)
