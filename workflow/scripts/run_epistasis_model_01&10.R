@@ -8,11 +8,11 @@ library(boot)
 
 # Read in enhancer pairs with pre-included ATAC and RNA information
 # edit the paths if needed
-rna <- readRDS('data/rna_matrix.rds')
-atac <- readRDS('data/atac_matrix.rds')
-metadata <- readRDS('data/metafile.rds')
+rna <- readRDS('/Users/huajingru/Desktop/Fall 2024/Capstone/PBMC/rna_matrix.rds')
+atac <- readRDS('/Users/huajingru/Desktop/Fall 2024/Capstone/PBMC/atac_matrix.rds')
+metadata <- readRDS('/Users/huajingru/Desktop/Fall 2024/Capstone/PBMC/metafile.rds')
+enhancer.pairs <- read.csv('/Users/huajingru/Desktop/Fall 2024/Capstone/CDS-2024-Fall-Capstone/data_processing/11_pairs/11_pairs2.csv')
 
-enhancer.pairs <- read.csv('data_processing/11_pairs/11_pairs1.csv')
 # ... enhancer.pairs <- read.csv('data_processing/11_pairs/11_pairs32.csv')
 
 desired_celltypes <- c('CD8-Naive')
@@ -22,8 +22,11 @@ atac <- atac[, metadata$celltype %in% desired_celltypes]
 metadata <- metadata[metadata$celltype %in% desired_celltypes,]
 
 # Create dataframes to store epistasis model results for both cells_1 and cells_2
-results_cells_1 <- data.frame(matrix(ncol = 6, nrow = nrow(enhancer.pairs)))
-results_cells_2 <- data.frame(matrix(ncol = 6, nrow = nrow(enhancer.pairs)))
+results_cells_1 <- data.frame(matrix(ncol = 7, nrow = nrow(enhancer.pairs)))
+colnames(results_cells_1) <- c("gene", "enhancer_1", "enhancer_2", "intercept", "beta_estimate", "beta_pvalue", "bootstrap_pvalue")
+
+results_cells_2 <- data.frame(matrix(ncol = 7, nrow = nrow(enhancer.pairs)))
+colnames(results_cells_2) <- c("gene", "enhancer_1", "enhancer_2", "intercept", "beta_estimate", "beta_pvalue", "bootstrap_pvalue")
 
 # Define Poisson GLM function for bootstrapping
 poisson.coefficient <- function(data, idx = seq_len(nrow(data)), formula) {
@@ -103,7 +106,7 @@ for (i in 1:nrow(enhancer.pairs)) {
     }
     
     # add model results to results data frame
-    mdl.vector <- c(gene, enhancer.1, intercept, beta.estimate,
+    mdl.vector <- c(gene, enhancer.1, enhancer.2, intercept, beta.estimate,
                     beta.pvalue, bootstrap.pvalue)
     results_cells_1[i, ] <- mdl.vector
   }
@@ -150,7 +153,7 @@ for (i in 1:nrow(enhancer.pairs)) {
     }
     
     # add model results to results data frame
-    mdl.vector <- c(gene, enhancer.2, intercept, beta.estimate,
+    mdl.vector <- c(gene, enhancer.1, enhancer.2, intercept, beta.estimate,
                     beta.pvalue, bootstrap.pvalue)
     results_cells_2[i, ] <- mdl.vector
     
@@ -158,5 +161,5 @@ for (i in 1:nrow(enhancer.pairs)) {
 }
 
 # Write results to separate output files
-write.csv(results_cells_1, 'results/model_results_cells_1.csv', row.names = FALSE)
-write.csv(results_cells_2, 'results/model_results_cells_2.csv', row.names = FALSE)
+write.csv(results_cells_1, 'model_results/model_results_cells_01.csv', row.names = FALSE)
+write.csv(results_cells_2, 'model_results/model_results_cells_10.csv', row.names = FALSE)

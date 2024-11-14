@@ -21,7 +21,7 @@ metadata <- metadata[metadata$celltype %in% desired_celltypes,]
 
 # Create a dataframe to store combined model results
 results <- data.frame(matrix(ncol = 6, nrow = nrow(enhancer.pairs)))
-colnames(results) <- c("gene", "enhancer", "intercept", "beta.estimate", "beta.pvalue", "bootstrap.pvalue")
+#colnames(results) <- c("gene", "enhancers", "intercept", "beta.estimate", "beta.pvalue", "bootstrap.pvalue")
 
 # Define Poisson GLM function for bootstrapping
 poisson.coefficient <- function(data, idx = seq_len(nrow(data)), formula) {
@@ -55,8 +55,8 @@ for (i in 1:nrow(enhancer.pairs)) {
   gene <- enhancer.pairs$gene[i]
   
   # Define cell groups for cells_1 (enhancer.1 active) and cells_2 (enhancer.2 active)
-  cells_1 <- colnames(atac)[atac[enhancer.1, ] == 0 & atac[enhancer.2, ] %in% c(0,1)]
-  cells_2 <- colnames(atac)[atac[enhancer.2, ] == 0 & atac[enhancer.1, ] %in% c(0,1)]
+  cells_1 <- colnames(atac)[atac[enhancer.1, ] == 0 & atac[enhancer.2, ] == 0]
+  cells_2 <- colnames(atac)[atac[enhancer.1, ] == 1 & atac[enhancer.2, ] == 1]
   
   # Combine cells_1 and cells_2 into one dataset
   combined_cells <- unique(c(cells_1, cells_2))
@@ -99,4 +99,4 @@ for (i in 1:nrow(enhancer.pairs)) {
 }
 
 # Write results to a single output file
-write.csv(results, 'model_results/model_results_combined.csv', row.names = FALSE)
+write.csv(results, 'model_results/model_results_combined_test.csv', row.names = FALSE)
